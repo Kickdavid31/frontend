@@ -1,13 +1,30 @@
-// pages/SignIn.js
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Animated } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native'; // Importar useFocusEffect
 import img from '../assets/SignIn.png';
 
 export default function SignIn({ navigation }) {
+  const translateX = useRef(new Animated.Value(300)).current; // Iniciar fuera de la pantalla a la derecha
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reiniciar el valor de translateX a 300
+      translateX.setValue(300);
+
+      // Iniciar la animación al montar el componente
+      Animated.timing(translateX, {
+        toValue: 0, // Mover a la posición original
+        duration: 1000, // Duración de la animación en milisegundos
+        useNativeDriver: true, // Utilizar el controlador nativo para mejor rendimiento
+      }).start();
+    }, [translateX])
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Imagen en la parte superior sin padding */}
-      <Image source={img} style={styles.headerImage} />
+      {/* Imagen en la parte superior con animación */}
+      <Animated.Image source={img} style={[styles.headerImage, { transform: [{ translateX }] }]} />
 
       {/* Contenedor de pestañas */}
       <View style={styles.tabContainer}>
@@ -38,12 +55,12 @@ export default function SignIn({ navigation }) {
       </TouchableOpacity>
 
       {/* Texto "OR" y sección de redes sociales */}
-      <View style={{flexDirection: 'row', alignItems: 'center', padding: 20, marginTop: 20}}>
-        <View style={{flex: 1, height: 1, backgroundColor: '#B5B5B5'}} />
-          <View>
-            <Text style={{width: 50, textAlign: 'center'}}>OR</Text>
-          </View>
-        <View style={{flex: 1, height: 1, backgroundColor: '#B5B5B5'}} />
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 20, marginTop: 20 }}>
+        <View style={{ flex: 1, height: 1, backgroundColor: '#B5B5B5' }} />
+        <View>
+          <Text style={{ width: 50, textAlign: 'center' }}>OR</Text>
+        </View>
+        <View style={{ flex: 1, height: 1, backgroundColor: '#B5B5B5' }} />
       </View>
       <View style={styles.socialContainer}>
         <Text>Sign in using:</Text>
@@ -71,6 +88,7 @@ const styles = StyleSheet.create({
   forgotPassword: { color: '#FF5722', textAlign: 'right', marginBottom: 20, paddingHorizontal: 20 },
   button: { backgroundColor: '#FF5722', padding: 15, borderRadius: 10, marginHorizontal: 20, marginTop: 10 },
   buttonText: { color: '#fff', fontSize: 18, textAlign: 'center' },
+  orText: { textAlign: 'center', marginVertical: 10 },
   socialContainer: { alignItems: 'center', marginTop: 10 },
   iconContainer: { flexDirection: 'row', justifyContent: 'space-around', width: '60%', marginTop: 10 }
 });

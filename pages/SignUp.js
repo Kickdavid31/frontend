@@ -1,17 +1,33 @@
-// pages/SignUp.js
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Animated } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons'; 
 import img from '../assets/SignUp.png';
 
 export default function SignUp({ navigation }) {
+  const translateX = useRef(new Animated.Value(-300)).current; // Iniciar fuera de la pantalla a la izquierda
+  const [isSignIn, setIsSignIn] = useState(false); // Estado para controlar la vista
+
+  useEffect(() => {
+    Animated.timing(translateX, {
+      toValue: isSignIn ? 300 : 0, // Cambiar dirección según el estado
+      duration: 1000, // Duración de la animación en milisegundos
+      useNativeDriver: true, // Utilizar el controlador nativo para mejor rendimiento
+    }).start();
+  }, ([isSignIn]));
+
+  const handleSignIn = () => {
+    setIsSignIn(true); // Cambiar el estado al presionar "Sign In"
+    navigation.navigate('SignIn'); // Navegar a la pantalla de Sign In
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Imagen en la parte superior sin padding */}
-      <Image source={img} style={styles.headerImage} />
+      {/* Imagen en la parte superior con animación */}
+      <Animated.Image source={img} style={[styles.headerImage, { transform: [{ translateX }] }]} />
 
       {/* Contenedor de pestañas */}
       <View style={styles.tabContainer}>
-        <TouchableOpacity style={styles.inactiveTab} onPress={() => navigation.navigate('SignIn')}>
+        <TouchableOpacity style={styles.inactiveTab} onPress={handleSignIn}>
           <Text style={styles.tabTextInactive}>Sign In</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.activeTab}>
